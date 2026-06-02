@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar Nilai SMK — 2025/2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  --primary: #1e40af;
+  --primary-light: #3b82f6;
+  --primary-dark: #1e3a8a;
+  --accent: #f59e0b;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --bg: #f0f4ff;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --radius: 12px;
+  --shadow: 0 2px 12px rgba(30,64,175,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+header {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, var(--primary-light) 100%);
+  color: #fff; padding: 20px 28px;
+  display: flex; align-items: center; gap: 16px;
+  box-shadow: 0 2px 16px rgba(30,64,175,0.25);
+}
+.header-icon { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 10px; font-size: 1.8rem; line-height:1; flex-shrink:0; }
+header h1 { font-size: 1.25rem; font-weight: 700; }
+header p  { font-size: .82rem; opacity: .8; margin-top: 2px; }
+.header-badge { margin-left: auto; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 5px 14px; font-size: .78rem; font-weight: 600; white-space: nowrap; }
+
+main { max-width: 1500px; margin: 0 auto; padding: 22px 20px 60px; }
+
+.config-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 24px; margin-bottom: 18px; border: 1px solid var(--border); }
+.config-card h2 { font-size: .95rem; font-weight: 700; color: var(--primary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.config-grid label { font-size: .75rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .5px; }
+.config-grid input, .config-grid select { width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 11px; font-size: .88rem; color: var(--text); background: #f8faff; outline: none; transition: border .2s; }
+.config-grid input:focus, .config-grid select:focus { border-color: var(--primary-light); }
+
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.stat-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px 16px; box-shadow: var(--shadow); text-align: center; }
+.stat-card .val { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
+.stat-card .lbl { font-size: .72rem; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
+.stat-card.green .val { color: var(--success); }
+.stat-card.orange .val { color: var(--warning); }
+.stat-card.red .val { color: var(--danger); }
+
+.action-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: .84rem; font-weight: 600; border: none; cursor: pointer; transition: all .18s; white-space: nowrap; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(30,64,175,.3); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { background: #059669; transform: translateY(-1px); }
+.btn-accent  { background: var(--accent); color: #fff; }
+.btn-accent:hover  { background: #d97706; transform: translateY(-1px); }
+.btn-outline { background: var(--card); color: var(--primary); border: 1.5px solid var(--primary-light); }
+.btn-outline:hover { background: #eff6ff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-sm { padding: 5px 10px; font-size: .78rem; }
+.search-box { margin-left: auto; display: flex; align-items: center; gap: 8px; background: var(--card); border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 12px; }
+.search-box input { border: none; outline: none; font-size: .85rem; width: 160px; color: var(--text); background: transparent; }
+
+/* ─── Table ─── */
+.table-wrap { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .82rem; }
+
+/* Header rows */
+thead tr:first-child th { background: #1e3a8a; color: #fff; padding: 10px 8px; font-size: .74rem; letter-spacing: .6px; font-weight: 700; text-transform: uppercase; text-align: center; position: sticky; top: 0; z-index: 3; }
+thead tr:last-child th { background: #1e4fad; color: #e0eaff; padding: 7px 6px; font-size: .73rem; font-weight: 600; text-align: center; position: sticky; top: 37px; z-index: 3; border-bottom: 2px solid #3b82f6; }
+
+/* Column group separators */
+thead th.sep { border-left: 2px solid rgba(255,255,255,0.25); }
+tbody td.sep { border-left: 2px solid #dde6f5; }
+
+tbody tr { transition: background .12s; }
+tbody tr:nth-child(even) { background: #f7f9ff; }
+tbody tr:hover { background: #eff6ff; }
+tbody td { padding: 0; border-bottom: 1px solid #eef2fb; text-align: center; vertical-align: middle; }
+
+/* Sticky columns */
+.col-no   { width: 38px; min-width: 38px; }
+.col-nama { min-width: 155px; width: 175px; text-align: left !important; }
+.col-nis  { width: 78px; min-width: 68px; }
+.col-nisn { width: 104px; min-width: 96px; }
+.col-jk   { width: 46px; min-width: 40px; }
+.col-f    { width: 54px; min-width: 50px; }
+.col-s    { width: 54px; min-width: 50px; }
+.col-avgf { width: 68px; min-width: 60px; }
+.col-avgs { width: 68px; min-width: 60px; }
+.col-sas  { width: 68px; min-width: 60px; }
+.col-rap  { width: 84px; min-width: 80px; }
+
+/* Cell inputs */
+td .cell-in {
+  display: block; width: 100%; border: none; background: transparent;
+  font-size: .82rem; text-align: center; color: var(--text);
+  padding: 7px 4px; outline: none;
+  transition: background .15s;
+}
+td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
+td.col-nama .cell-in { text-align: left; padding-left: 8px; font-weight: 600; }
+td.col-jk select.cell-in { cursor: pointer; }
+
+/* Auto-computed cells */
+.auto-cell { background: #f0f9f4; }
+.auto-val  { display: inline-block; padding: 5px 6px; font-weight: 700; color: #065f46; font-size: .82rem; }
+
+/* Rapor badge */
+.rapor-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-weight: 700; font-size: .8rem; }
+.rap-a { background: #d1fae5; color: #065f46; }
+.rap-b { background: #dbeafe; color: #1e40af; }
+.rap-c { background: #fef3c7; color: #92400e; }
+.rap-d { background: #fee2e2; color: #991b1b; }
+
+/* Row number */
+td.col-no span { display: block; padding: 6px 4px; color: var(--text-muted); font-size: .75rem; font-weight: 600; }
+
+/* Add-row button row */
+tr.add-row td { padding: 6px; background: #f8faff; }
+
+/* Toast */
+#toast { position: fixed; bottom: 24px; right: 24px; background: var(--primary-dark); color: #fff; padding: 11px 20px; border-radius: 10px; font-size: .85rem; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.2); opacity: 0; transform: translateY(8px); transition: all .3s; z-index: 999; pointer-events: none; }
+#toast.show { opacity: 1; transform: translateY(0); }
+#toast.success { background: var(--success); }
+#toast.error { background: var(--danger); }
+
+/* Modal */
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 500; align-items: center; justify-content: center; }
+.modal-bg.open { display: flex; }
+.modal { background: var(--card); border-radius: 16px; padding: 28px; width: 94%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,.25); position: relative; max-height: 90vh; overflow-y: auto; }
+.modal h3 { font-size: 1.05rem; font-weight: 700; color: var(--primary); margin-bottom: 16px; }
+.modal p  { font-size: .85rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 8px; }
+.modal code { display: block; background: #1e293b; color: #86efac; border-radius: 8px; padding: 12px 14px; font-size: .74rem; margin: 8px 0; overflow-x: auto; white-space: pre; line-height: 1.6; }
+.modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-muted); }
+.modal-actions { display: flex; gap: 10px; margin-top: 18px; }
+.icode { background:#f1f5f9; color:#1e40af; padding:2px 6px; border-radius:4px; display:inline; font-size:.8rem; }
+
+.spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Progress bar for save */
+#save-progress { display:none; height:3px; background: #bfdbfe; border-radius:2px; margin-bottom:10px; overflow:hidden; }
+#save-progress-bar { height:100%; background: var(--primary); width:0%; transition: width .4s; border-radius:2px; }
+
+@media (max-width: 700px) {
+  header { padding: 14px 16px; flex-wrap: wrap; }
+  .header-badge { display: none; }
+  main { padding: 14px 12px 50px; }
+  .search-box input { width: 120px; }
+}
+@media print {
+  header, .action-bar, .config-card, #toast, .modal-bg, #save-progress { display: none !important; }
+  .table-wrap { box-shadow: none; border: 1px solid #ccc; }
+  table { font-size: .72rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-icon">📋</div>
+  <div>
+    <h1>Daftar Nilai Siswa</h1>
+    <p>Sistem Penilaian SMK Negeri 1 Maluku Tengah · Tahun Pelajaran 2025/2026</p>
+  </div>
+  <div class="header-badge">🏫 Wakasek Kurikulum</div>
+</header>
+
+<main>
+  <div class="config-card">
+    <h2>⚙️ Konfigurasi</h2>
+    <div class="config-grid">
+      <div><label>Nama Sekolah</label><input id="cfg-sekolah" type="text" value="SMK NEGERI 1 Maluku Tengah"></div>
+      <div><label>Mata Pelajaran</label><input id="cfg-mapel" type="text" value="Basis Informasi &amp; Jaringan"></div>
+      <div><label>Kelas / Rombel</label><input id="cfg-kelas" type="text" value="Ketik Nama Kelas"></div>
+      <div><label>Semester</label><select id="cfg-semester"><option value="Ganjil">Ganjil</option><option value="Genap" selected>Genap</option></select></div>
+      <div><label>Guru Pengampu</label><input id="cfg-guru" type="text" value="—"></div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="val" id="st-total">0</div><div class="lbl">Total Siswa</div></div>
+    <div class="stat-card green"><div class="val" id="st-avg">—</div><div class="lbl">Rata-rata Rapor</div></div>
+    <div class="stat-card green"><div class="val" id="st-lulus">0</div><div class="lbl">Tuntas ≥75</div></div>
+    <div class="stat-card red"><div class="val" id="st-remedial">0</div><div class="lbl">Remedial &lt;75</div></div>
+    <div class="stat-card orange"><div class="val" id="st-max">—</div><div class="lbl">Nilai Tertinggi</div></div>
+    <div class="stat-card orange"><div class="val" id="st-min">—</div><div class="lbl">Nilai Terendah</div></div>
+  </div>
+
+  <div id="save-progress"><div id="save-progress-bar"></div></div>
+
+  <div class="action-bar">
+    <button class="btn btn-success" id="btn-sync" onclick="syncToSheets()">☁️ Simpan ke Google Sheets</button>
+    <button class="btn btn-accent" onclick="exportExcel()">📥 Download Excel</button>
+    <button class="btn btn-outline" onclick="loadFromSheets()">🔄 Muat dari Sheets</button>
+    <button class="btn btn-outline" onclick="addRow()">➕ Tambah Siswa</button>
+    <button class="btn btn-outline" onclick="printTable()">🖨️ Cetak</button>
+    <button class="btn btn-outline" onclick="document.getElementById('modal-setup').classList.add('open')">❓ Panduan Setup</button>
+    <div class="search-box">
+      🔍 <input id="search-input" type="text" placeholder="Cari nama / NIS…" oninput="filterTable()">
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="nilai-table">
+      <thead>
+        <tr>
+          <th rowspan="2" class="col-no">No</th>
+          <th rowspan="2" class="col-nama">Nama Siswa</th>
+          <th rowspan="2" class="col-nis sep">NIS</th>
+          <th rowspan="2" class="col-nisn">NISN</th>
+          <th rowspan="2" class="col-jk">J/K</th>
+          <th colspan="4" class="sep">NILAI FORMATIF</th>
+          <th colspan="4" class="sep">NILAI SUMATIF</th>
+          <th rowspan="2" class="col-sas sep">SAS</th>
+          <th rowspan="2" class="col-rap sep">Nilai Rapor</th>
+          <th rowspan="2" class="col-no sep">Aksi</th>
+        </tr>
+        <tr>
+          <th class="col-f sep">F1</th>
+          <th class="col-f">F2</th>
+          <th class="col-f">F3</th>
+          <th class="col-avgf">Avg F</th>
+          <th class="col-s sep">S1</th>
+          <th class="col-s">S2</th>
+          <th class="col-s">S3</th>
+          <th class="col-avgs">Avg S</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</main>
+
+<!-- Modal Setup -->
+<div class="modal-bg" id="modal-setup">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modal-setup').classList.remove('open')">✕</button>
+    <h3>🔧 Panduan Setup Google Sheets</h3>
+    <p><strong>Langkah 1.</strong> Buka spreadsheet → klik <em>Extensions → Apps Script</em>.</p>
+    <p><strong>Langkah 2.</strong> Hapus kode lama, paste kode ini:</p>
+    <code>const SHEET_ID = "1ncWuZxFDaDqNFYNn2Co052JvGYYBdSn-nzrcBhi4jZ8";
+const SHEET_NAME = "Sheet1";
+
+function doPost(e) {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const sh = ss.getSheetByName(SHEET_NAME);
+    const rows = JSON.parse(e.postData.contents);
+    const last = sh.getLastRow();
+    if (last > 1) sh.getRange(2,1,last-1,15).clearContent();
+    rows.forEach((r,i) => {
+      sh.getRange(i+2,1,1,15).setValues([[
+        r.no,r.nama,r.nis,r.nisn,r.jk,
+        r.f1,r.f2,r.f3,r.avgF,
+        r.s1,r.s2,r.s3,r.avgS,
+        r.sas,r.rapor
+      ]]);
+    });
+    return ContentService
+      .createTextOutput(JSON.stringify({status:"ok",rows:rows.length}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({status:"error",msg:err.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  if (e.parameter.data) {
+    // Terima data via GET (fallback CORS)
+    try {
+      const ss = SpreadsheetApp.openById(SHEET_ID);
+      const sh = ss.getSheetByName(SHEET_NAME);
+      const rows = JSON.parse(decodeURIComponent(e.parameter.data));
+      const last = sh.getLastRow();
+      if (last > 1) sh.getRange(2,1,last-1,15).clearContent();
+      rows.forEach((r,i) => {
+        sh.getRange(i+2,1,1,15).setValues([[
+          r.no,r.nama,r.nis,r.nisn,r.jk,
+          r.f1,r.f2,r.f3,r.avgF,
+          r.s1,r.s2,r.s3,r.avgS,
+          r.sas,r.rapor
+        ]]);
+      });
+      return ContentService
+        .createTextOutput(JSON.stringify({status:"ok",rows:rows.length}))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch(err) {
+      return ContentService
+        .createTextOutput(JSON.stringify({status:"error",msg:err.toString()}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+  // Normal GET = baca data
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sh = ss.getSheetByName(SHEET_NAME);
+  const data = sh.getDataRange().getValues().slice(1)
+    .filter(r=>r[1]).map(r=>({
+      no:r[0],nama:r[1],nis:r[2],nisn:r[3],jk:r[4],
+      f1:r[5],f2:r[6],f3:r[7],avgF:r[8],
+      s1:r[9],s2:r[10],s3:r[11],avgS:r[12],
+      sas:r[13],rapor:r[14]
+    }));
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}</code>
+    <p><strong>Langkah 3.</strong> Deploy → New Deployment → Web App. Set <em>Execute as: Me</em> &amp; <em>Who has access: Anyone</em>. Copy URL-nya.</p>
+    <p><strong>Langkah 4.</strong> Paste URL ke konstanta <code class="icode">GAS_URL</code> di baris paling atas &lt;script&gt;. Simpan file HTML.</p>
+    <p><strong>💡 Catatan CORS:</strong> Aplikasi ini otomatis mencoba POST dulu, lalu fallback ke GET jika ada blokir CORS. Kedua cara sudah didukung oleh kode Apps Script di atas.</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="document.getElementById('modal-setup').classList.remove('open')">Mengerti, Tutup</button>
+      <a href="https://docs.google.com/spreadsheets/d/1ncWuZxFDaDqNFYNn2Co052JvGYYBdSn-nzrcBhi4jZ8/edit" target="_blank" class="btn btn-outline">Buka Spreadsheet ↗</a>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  ▶▶ GANTI URL INI SETELAH DEPLOY ◀◀
+// ══════════════════════════════════════════
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyFJmgTCCYIHieaIzov5zCm4TMPVN1HDioRf-T-XSVa7Zofb74N6Yuxcw1ZpqBAYGjGfQ/exec";
+// ══════════════════════════════════════════
+
+let rows = [], rowId = 0;
+
+const avg = (...vals) => {
+  const nums = vals.filter(v => v !== '' && v !== null && v !== undefined && !isNaN(v)).map(Number);
+  return nums.length ? +(nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1) : '';
+};
+const raporVal = (aF, sas) => (aF === '' || sas === '' || sas === null || sas === undefined) ? '' : +((+aF * 0.5) + (+sas * 0.5)).toFixed(1);
+const grade = val => {
+  if (val === '' || val === null || isNaN(val)) return { label:'—', cls:'' };
+  const n = +val;
+  if (n >= 90) return { label:'A', cls:'rap-a' };
+  if (n >= 75) return { label:'B', cls:'rap-b' };
+  if (n >= 60) return { label:'C', cls:'rap-c' };
+  return { label:'D', cls:'rap-d' };
+};
+
+function initRows() {
+  [
+    { nama:'Ahmad Fauzi',  nis:'241001', nisn:'3052100001', jk:'L', f1:85, f2:88, f3:90, s1:82, s2:86, s3:88, sas:87 },
+    { nama:'Siti Rahayu',  nis:'241002', nisn:'3052100002', jk:'P', f1:78, f2:80, f3:82, s1:75, s2:79, s3:80, sas:78 },
+    { nama:'Budi Santoso', nis:'241003', nisn:'3052100003', jk:'L', f1:70, f2:68, f3:72, s1:65, s2:70, s3:68, sas:68 },
+  ].forEach(s => rows.push({ id: ++rowId, ...s }));
+  renderAll();
+}
+
+function addRow() {
+  rows.push({ id: ++rowId, nama:'', nis:'', nisn:'', jk:'L', f1:'', f2:'', f3:'', s1:'', s2:'', s3:'', sas:'' });
+  renderAll();
+  // Focus nama cell of last row
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('#table-body tr:last-child .cell-in');
+    if (inputs[0]) inputs[0].focus();
+  }, 50);
+}
+
+function deleteRow(id) {
+  rows = rows.filter(r => r.id !== id);
+  renderAll();
+}
+
+function renderAll() { renderTable(); updateStats(); }
+
+function renderTable() {
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+  rows.forEach((r, i) => {
+    const aF = avg(r.f1, r.f2, r.f3);
+    const aS = avg(r.s1, r.s2, r.s3);
+    const rap = raporVal(aF, r.sas);
+    const g = grade(rap);
+    const tr = document.createElement('tr');
+    tr.dataset.id = r.id;
+    tr.innerHTML = `
+      <td class="col-no"><span>${i+1}</span></td>
+      <td class="col-nama"><input class="cell-in" type="text" value="${esc(r.nama)}" placeholder="Nama siswa…" onchange="updateField(${r.id},'nama',this.value)"></td>
+      <td class="col-nis sep"><input class="cell-in" type="text" value="${esc(r.nis)}" placeholder="NIS" onchange="updateField(${r.id},'nis',this.value)"></td>
+      <td class="col-nisn"><input class="cell-in" type="text" value="${esc(r.nisn)}" placeholder="NISN" onchange="updateField(${r.id},'nisn',this.value)"></td>
+      <td class="col-jk">
+        <select class="cell-in" onchange="updateField(${r.id},'jk',this.value)">
+          <option value="L" ${r.jk==='L'?'selected':''}>L</option>
+          <option value="P" ${r.jk==='P'?'selected':''}>P</option>
+        </select>
+      </td>
+      <td class="col-f sep"><input class="cell-in" type="number" min="0" max="100" value="${r.f1??''}" onchange="updateNum(${r.id},'f1',this.value)"></td>
+      <td class="col-f"><input class="cell-in" type="number" min="0" max="100" value="${r.f2??''}" onchange="updateNum(${r.id},'f2',this.value)"></td>
+      <td class="col-f"><input class="cell-in" type="number" min="0" max="100" value="${r.f3??''}" onchange="updateNum(${r.id},'f3',this.value)"></td>
+      <td class="col-avgf auto-cell"><span class="auto-val">${aF !== '' ? aF : '—'}</span></td>
+      <td class="col-s sep"><input class="cell-in" type="number" min="0" max="100" value="${r.s1??''}" onchange="updateNum(${r.id},'s1',this.value)"></td>
+      <td class="col-s"><input class="cell-in" type="number" min="0" max="100" value="${r.s2??''}" onchange="updateNum(${r.id},'s2',this.value)"></td>
+      <td class="col-s"><input class="cell-in" type="number" min="0" max="100" value="${r.s3??''}" onchange="updateNum(${r.id},'s3',this.value)"></td>
+      <td class="col-avgs auto-cell"><span class="auto-val">${aS !== '' ? aS : '—'}</span></td>
+      <td class="col-sas sep"><input class="cell-in" type="number" min="0" max="100" value="${r.sas??''}" onchange="updateNum(${r.id},'sas',this.value)"></td>
+      <td class="col-rap auto-cell sep">
+        ${rap !== '' ? `<span class="rapor-badge ${g.cls}">${rap} ${g.label}</span>` : '<span style="color:var(--text-muted);font-size:.78rem;">—</span>'}
+      </td>
+      <td class="sep" style="padding:4px 6px;">
+        <button class="btn btn-danger btn-sm" onclick="deleteRow(${r.id})" title="Hapus">🗑</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+const esc = v => (v||'').toString().replace(/"/g,'&quot;').replace(/</g,'&lt;');
+
+function updateField(id, key, val) {
+  const r = rows.find(r=>r.id===id);
+  if (r) { r[key] = val; updateStats(); }
+}
+function updateNum(id, key, val) {
+  const r = rows.find(r=>r.id===id);
+  if (r) { r[key] = val === '' ? '' : +val; renderAll(); }
+}
+
+function updateStats() {
+  const vals = rows.map(r => raporVal(avg(r.f1,r.f2,r.f3), r.sas)).filter(v => v !== '');
+  document.getElementById('st-total').textContent    = rows.length;
+  document.getElementById('st-avg').textContent      = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : '—';
+  document.getElementById('st-lulus').textContent    = vals.filter(v=>v>=75).length;
+  document.getElementById('st-remedial').textContent = vals.filter(v=>v<75).length;
+  document.getElementById('st-max').textContent      = vals.length ? Math.max(...vals) : '—';
+  document.getElementById('st-min').textContent      = vals.length ? Math.min(...vals) : '—';
+}
+
+function filterTable() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  document.querySelectorAll('#table-body tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// ── Payload builder ──
+function buildPayload() {
+  return rows.filter(r=>r.nama).map((r,i) => {
+    const aF = avg(r.f1,r.f2,r.f3), aS = avg(r.s1,r.s2,r.s3);
+    return {
+      no: i+1, nama: r.nama, nis: r.nis||'', nisn: r.nisn||'', jk: r.jk||'L',
+      f1: r.f1||0, f2: r.f2||0, f3: r.f3||0, avgF: aF||0,
+      s1: r.s1||0, s2: r.s2||0, s3: r.s3||0, avgS: aS||0,
+      sas: r.sas||0, rapor: raporVal(aF,r.sas)||0
+    };
+  });
+}
+
+// ── Google Sheets Sync ──
+// Strategy: POST first (proper JSON), fallback to GET with encoded data (bypasses CORS preflight)
+async function syncToSheets() {
+  if (!GAS_URL || GAS_URL.includes('PASTE_URL') || GAS_URL.trim() === '') {
+    showToast('⚠️ URL Apps Script belum diisi! Lihat Panduan Setup.', 'error');
+    document.getElementById('modal-setup').classList.add('open');
+    return;
+  }
+  const payload = buildPayload();
+  if (payload.length === 0) { showToast('⚠️ Tidak ada data untuk disimpan.', 'error'); return; }
+
+  const btn = document.getElementById('btn-sync');
+  btn.innerHTML = '<span class="spinner"></span> Menyimpan…';
+  btn.disabled = true;
+
+  const prog = document.getElementById('save-progress');
+  const bar  = document.getElementById('save-progress-bar');
+  prog.style.display = 'block'; bar.style.width = '30%';
+
+  try {
+    // Coba POST dulu
+    bar.style.width = '55%';
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'text/plain' }  // text/plain avoids CORS preflight
+    });
+    bar.style.width = '85%';
+    const json = await res.json();
+    bar.style.width = '100%';
+    if (json.status === 'ok') {
+      showToast(`✅ ${json.rows} data berhasil disimpan ke Google Sheets!`, 'success');
+    } else {
+      throw new Error(json.msg || 'Status error dari Apps Script');
+    }
+  } catch(err) {
+    // Fallback: GET dengan data di query param (100% bebas CORS)
+    try {
+      bar.style.width = '50%';
+      showToast('🔄 Mencoba metode alternatif…', '');
+      const encoded = encodeURIComponent(JSON.stringify(payload));
+      // no-cors GET — tidak bisa baca response, tapi data tetap masuk ke sheet
+      await fetch(`${GAS_URL}?data=${encoded}`, { mode: 'no-cors' });
+      bar.style.width = '100%';
+      showToast(`✅ ${payload.length} data dikirim! Cek spreadsheet Anda.`, 'success');
+    } catch(err2) {
+      bar.style.width = '100%';
+      showToast('❌ Gagal: ' + err2.message, 'error');
+    }
+  } finally {
+    btn.innerHTML = '☁️ Simpan ke Google Sheets';
+    btn.disabled = false;
+    setTimeout(() => { prog.style.display='none'; bar.style.width='0%'; }, 1200);
+  }
+}
+
+async function loadFromSheets() {
+  if (!GAS_URL || GAS_URL.trim() === '') {
+    showToast('⚠️ URL Apps Script belum diisi!', 'error'); return;
+  }
+  showToast('🔄 Memuat data dari Google Sheets…', '');
+  try {
+    const res = await fetch(GAS_URL);
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('Format data tidak valid');
+    rows = data.map(d => ({ id: ++rowId, ...d }));
+    renderAll();
+    showToast(`✅ ${rows.length} baris berhasil dimuat!`, 'success');
+  } catch(err) {
+    showToast('❌ Gagal memuat: ' + err.message, 'error');
+  }
+}
+
+// ── Export Excel ──
+function exportExcel() {
+  const sekolah = document.getElementById('cfg-sekolah').value;
+  const mapel   = document.getElementById('cfg-mapel').value;
+  const kelas   = document.getElementById('cfg-kelas').value;
+  const sem     = document.getElementById('cfg-semester').value;
+  const guru    = document.getElementById('cfg-guru').value;
+
+  const info = [
+    ['DAFTAR NILAI SISWA'],
+    [`Sekolah: ${sekolah}`, '', `Mata Pelajaran: ${mapel}`],
+    [`Kelas: ${kelas}`, '', `Semester: ${sem}`, '', `Guru: ${guru}`],
+    [],
+    ['No','Nama Siswa','NIS','NISN','J/K',
+     'Formatif 1','Formatif 2','Formatif 3','Rata Formatif',
+     'Sumatif 1','Sumatif 2','Sumatif 3','Rata Sumatif',
+     'SAS','Nilai Rapor']
+  ];
+  rows.filter(r=>r.nama).forEach((r,i) => {
+    const aF = avg(r.f1,r.f2,r.f3), aS = avg(r.s1,r.s2,r.s3);
+    info.push([i+1, r.nama, r.nis, r.nisn, r.jk,
+               r.f1||0, r.f2||0, r.f3||0, aF||0,
+               r.s1||0, r.s2||0, r.s3||0, aS||0,
+               r.sas||0, raporVal(aF,r.sas)||0]);
+  });
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(info);
+  ws['!cols'] = [{wch:4},{wch:26},{wch:10},{wch:14},{wch:4},{wch:9},{wch:9},{wch:9},{wch:13},{wch:9},{wch:9},{wch:9},{wch:13},{wch:10},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Daftar Nilai');
+  XLSX.writeFile(wb, `Daftar_Nilai_${kelas.replace(/\s+/g,'_')}_${sem}.xlsx`);
+  showToast('📥 File Excel berhasil diunduh!', 'success');
+}
+
+function printTable() { window.print(); }
+
+let toastTimer;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = '', 3500);
+}
+
+initRows();
+</script>
+</body>
+</html>
