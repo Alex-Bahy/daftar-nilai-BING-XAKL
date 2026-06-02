@@ -69,18 +69,40 @@ main { max-width: 1500px; margin: 0 auto; padding: 20px 18px 60px; }
 .search-box { margin-left: auto; display: flex; align-items: center; gap: 7px; background: var(--card); border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 12px; }
 .search-box input { border: none; outline: none; font-size: .84rem; width: 150px; color: var(--text); background: transparent; }
 
+/* ── Loading state ── */
+#loading-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 60px 20px; gap: 14px; color: var(--text-muted);
+}
+.loading-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid #dbeafe;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+#loading-state p { font-size: .9rem; font-weight: 600; }
+#loading-state small { font-size: .78rem; color: #94a3b8; }
+
+/* ── Empty / Error state ── */
+#empty-state {
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  padding: 60px 20px; gap: 10px; color: var(--text-muted); text-align: center;
+}
+#empty-state .empty-icon { font-size: 2.8rem; }
+#empty-state p { font-size: .9rem; font-weight: 600; }
+#empty-state small { font-size: .78rem; color: #94a3b8; max-width: 340px; line-height: 1.6; }
+
 /* ─── Table wrapper ─── */
 .table-wrap { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: auto; position: relative; }
 table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: .82rem; table-layout: auto; }
 
 /* ── Sticky / frozen columns ── */
-/* No column */
 th.fr-no, td.fr-no {
   position: sticky; left: 0; z-index: 4;
   width: var(--freeze-w-no); min-width: var(--freeze-w-no); max-width: var(--freeze-w-no);
   background: inherit;
 }
-/* Nama column */
 th.fr-nama, td.fr-nama {
   position: sticky; left: var(--freeze-w-no); z-index: 4;
   width: var(--freeze-w-nama); min-width: var(--freeze-w-nama);
@@ -88,12 +110,10 @@ th.fr-nama, td.fr-nama {
   box-shadow: var(--freeze-shadow);
   text-align: left !important;
 }
-/* Make frozen header cells use header bg */
 thead tr:first-child th.fr-no,
 thead tr:first-child th.fr-nama { background: #1e3a8a; z-index: 6; }
 thead tr:last-child th.fr-no,
 thead tr:last-child th.fr-nama  { background: #1e4fad; z-index: 6; }
-/* Frozen body cells */
 tbody tr:nth-child(even) td.fr-no,
 tbody tr:nth-child(even) td.fr-nama { background: #f7f9ff; }
 tbody tr:hover td.fr-no,
@@ -115,17 +135,14 @@ thead tr:last-child th {
   border-bottom: 2px solid #3b82f6;
 }
 
-/* Column separators */
 thead th.sep { border-left: 2px solid rgba(255,255,255,0.22); }
 tbody td.sep { border-left: 2px solid #dde6f5; }
 
-/* Body rows */
 tbody tr { transition: background .1s; }
 tbody tr:nth-child(even) { background: #f7f9ff; }
 tbody tr:hover { background: #eff6ff; }
 tbody td { padding: 0; border-bottom: 1px solid #eef2fb; text-align: center; vertical-align: middle; }
 
-/* Column widths */
 .col-nis  { width: 76px; min-width: 70px; }
 .col-nisn { width: 104px; min-width: 96px; }
 .col-jk   { width: 44px; min-width: 38px; }
@@ -135,7 +152,6 @@ tbody td { padding: 0; border-bottom: 1px solid #eef2fb; text-align: center; ver
 .col-sas  { width: 66px; min-width: 60px; }
 .col-rap  { width: 88px; min-width: 84px; }
 
-/* ── Frozen text cells (read-only) ── */
 .freeze-text {
   display: block; padding: 8px 6px;
   font-size: .82rem; color: var(--text);
@@ -145,7 +161,6 @@ tbody td { padding: 0; border-bottom: 1px solid #eef2fb; text-align: center; ver
 td.fr-nama .freeze-text { font-weight: 600; padding-left: 10px; font-size: .83rem; }
 td.fr-no .freeze-text   { color: var(--text-muted); font-size: .75rem; font-weight: 600; text-align: center; }
 
-/* ── Editable value inputs ── */
 td .cell-in {
   display: block; width: 100%; border: none; background: transparent;
   font-size: .84rem; text-align: center; color: var(--text);
@@ -156,35 +171,29 @@ td .cell-in::-webkit-inner-spin-button,
 td .cell-in::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
 
-/* Read-only info cells */
 .ro-cell {
   display: block; padding: 8px 5px;
   font-size: .81rem; color: var(--text-muted);
   text-align: center;
 }
 
-/* Auto-computed cells */
 .auto-cell { background: #f0faf5; }
 .auto-val  { display: inline-block; padding: 6px 5px; font-weight: 700; color: #0a6640; font-size: .82rem; }
 
-/* Rapor badge */
 .rapor-badge { display: inline-flex; align-items: center; gap: 3px; padding: 3px 9px; border-radius: 20px; font-weight: 700; font-size: .79rem; }
 .rap-a { background: #d1fae5; color: #065f46; }
 .rap-b { background: #dbeafe; color: #1e40af; }
 .rap-c { background: #fef3c7; color: #92400e; }
 .rap-d { background: #fee2e2; color: #991b1b; }
 
-/* Freeze indicator label */
 .freeze-hint { font-size: .72rem; color: var(--text-muted); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
 .freeze-hint span { background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 10px; font-weight: 600; font-size: .68rem; }
 
-/* Toast */
 #toast { position: fixed; bottom: 22px; right: 22px; background: var(--primary-dark); color: #fff; padding: 10px 18px; border-radius: 10px; font-size: .83rem; font-weight: 600; box-shadow: 0 6px 18px rgba(0,0,0,.2); opacity: 0; transform: translateY(8px); transition: all .3s; z-index: 999; pointer-events: none; }
 #toast.show { opacity: 1; transform: translateY(0); }
 #toast.success { background: var(--success); }
 #toast.error { background: var(--danger); }
 
-/* Modal */
 .modal-bg { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 500; align-items: center; justify-content: center; }
 .modal-bg.open { display: flex; }
 .modal { background: var(--card); border-radius: 16px; padding: 26px; width: 94%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,.25); position: relative; max-height: 90vh; overflow-y: auto; }
@@ -231,7 +240,7 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
   <div class="config-card">
     <h2>⚙️ Konfigurasi</h2>
     <div class="config-grid">
-      <div><label>Nama Sekolah</label><input id="cfg-sekolah" type="text" value="SMK NEGERI 1 Maluku Tengah"></div>
+      <div><label>Nama Sekolah</label><input id="cfg-sekolah" type="text" value="SMK Negeri 1 Maluku Tengah"></div>
       <div><label>Mata Pelajaran</label><input id="cfg-mapel" type="text" value="Basis Informasi &amp; Jaringan"></div>
       <div><label>Kelas / Rombel</label><input id="cfg-kelas" type="text" value="Ketik Nama Kelas"></div>
       <div><label>Semester</label><select id="cfg-semester"><option value="Ganjil">Ganjil</option><option value="Genap" selected>Genap</option></select></div>
@@ -253,7 +262,7 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
   <div class="action-bar">
     <button class="btn btn-success" id="btn-sync" onclick="syncToSheets()">☁️ Simpan ke Google Sheets</button>
     <button class="btn btn-accent" onclick="exportExcel()">📥 Download Excel</button>
-    <button class="btn btn-outline" onclick="loadFromSheets()">🔄 Muat dari Sheets</button>
+    <button class="btn btn-outline" onclick="loadFromSheets()">🔄 Muat Ulang dari Sheets</button>
     <button class="btn btn-outline" onclick="printTable()">🖨️ Cetak</button>
     <button class="btn btn-outline" onclick="document.getElementById('modal-setup').classList.add('open')">❓ Panduan Setup</button>
     <div class="search-box">
@@ -262,11 +271,25 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
   </div>
 
   <div class="freeze-hint">
-    <span>📌 Kolom Terkunci</span> Kolom No &amp; Nama Siswa tetap terlihat saat tabel digeser ke kanan (memudahkan input di HP)
+    <span>📌 Kolom Terkunci</span> Kolom No &amp; Nama Siswa tetap terlihat saat tabel digeser ke kanan
   </div>
 
   <div class="table-wrap">
-    <table id="nilai-table">
+    <!-- Loading state -->
+    <div id="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Memuat data dari Google Sheets…</p>
+      <small>Mohon tunggu sebentar</small>
+    </div>
+
+    <!-- Empty / Error state -->
+    <div id="empty-state">
+      <div class="empty-icon">📭</div>
+      <p id="empty-title">Tidak ada data</p>
+      <small id="empty-desc">Data siswa belum tersedia di Google Sheets, atau URL GAS_URL belum dikonfigurasi dengan benar.</small>
+    </div>
+
+    <table id="nilai-table" style="display:none">
       <thead>
         <tr>
           <th rowspan="2" class="fr-no">No</th>
@@ -302,7 +325,7 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
     <h3>🔧 Panduan Setup Google Sheets</h3>
     <p><strong>Langkah 1.</strong> Buka spreadsheet → klik <em>Extensions → Apps Script</em>.</p>
     <p><strong>Langkah 2.</strong> Hapus kode lama, paste kode ini:</p>
-    <code>const SHEET_ID = "1ncWuZxFDaDqNFYNn2Co052JvGYYBdSn-nzrcBhi4jZ8";
+    <code>const SHEET_ID = "ISI_SPREADSHEET_ID_ANDA";
 const SHEET_NAME = "Sheet1";
 
 function doPost(e) {
@@ -369,12 +392,10 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }</code>
     <p><strong>Langkah 3.</strong> Deploy → New Deployment → Web App. Set <em>Execute as: Me</em> &amp; <em>Who has access: Anyone</em>. Copy URL.</p>
-    <p><strong>Langkah 4.</strong> Paste URL ke konstanta <code class="icode">GAS_URL</code> di baris paling atas &lt;script&gt;. Simpan file HTML.</p>
+    <p><strong>Langkah 4.</strong> Buka file HTML ini, cari baris <code class="icode">const GAS_URL = "";</code> lalu paste URL Anda di antara tanda kutip. Simpan file.</p>
     <p><strong>💡 Catatan CORS:</strong> Aplikasi otomatis mencoba POST dulu, lalu fallback ke GET jika ada blokir CORS.</p>
-    <p><strong>🔒 Tambah/Hapus Siswa:</strong> Hanya bisa dilakukan oleh Wali Kelas dengan mengedit data di dalam kode HTML (array <code class="icode">initRows</code>) atau muat ulang dari Google Sheets.</p>
     <div class="modal-actions">
       <button class="btn btn-primary" onclick="document.getElementById('modal-setup').classList.remove('open')">Mengerti, Tutup</button>
-      <a href="https://docs.google.com/spreadsheets/d/1ncWuZxFDaDqNFYNn2Co052JvGYYBdSn-nzrcBhi4jZ8/edit" target="_blank" class="btn btn-outline">Buka Spreadsheet ↗</a>
     </div>
   </div>
 </div>
@@ -382,21 +403,26 @@ function doGet(e) {
 <div id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════
-//  ▶▶ GANTI URL INI SETELAH DEPLOY ◀◀
-// ══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+//  ▶▶ PASTE URL APPS SCRIPT ANDA DI SINI ◀◀
+// ══════════════════════════════════════════════════════
 const GAS_URL = "https://script.google.com/macros/s/AKfycbyFJmgTCCYIHieaIzov5zCm4TMPVN1HDioRf-T-XSVa7Zofb74N6Yuxcw1ZpqBAYGjGfQ/exec";
-// ══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 
 let rows = [], rowId = 0;
 
-// Hitung rata-rata dari nilai yang terisi saja (abaikan kosong)
+// Nilai dianggap "kosong" jika: string kosong, null, undefined, atau 0 dari Sheets (belum diisi)
+// Gunakan sentinel: hanya nilai > 0 atau nilai yang memang sengaja diisi 0 via input
+const isBlank = v => v === '' || v === null || v === undefined || String(v).trim() === '';
+
 const avg = (...vals) => {
-  const nums = vals.filter(v => v !== '' && v !== null && v !== undefined && !isNaN(+v) && String(v).trim() !== '').map(Number);
+  // Filter: harus ada nilainya (bukan blank) DAN berupa angka valid
+  const nums = vals
+    .filter(v => !isBlank(v) && !isNaN(+v))
+    .map(Number);
   return nums.length ? +(nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1) : '';
 };
 
-// Nilai rapor = (avgF * 0.5) + (SAS * 0.5), hanya jika kedua nilai terisi
 const raporVal = (aF, sas) => {
   if (aF === '' || sas === '' || sas === null || sas === undefined || String(sas).trim() === '') return '';
   return +((+aF * 0.5) + (+sas * 0.5)).toFixed(1);
@@ -411,24 +437,30 @@ const grade = val => {
   return { label:'D', cls:'rap-d' };
 };
 
-// ─────────────────────────────────────────────
-//  DATA SISWA — hanya Wali Kelas yang boleh
-//  menambah/menghapus entri di sini
-// ─────────────────────────────────────────────
-function initRows() {
-  [
-    { nama:'Ahmad Fauzi',   nis:'241001', nisn:'3052100001', jk:'L', f1:85, f2:88, f3:90, s1:82, s2:86, s3:88, sas:87 },
-    { nama:'Siti Rahayu',   nis:'241002', nisn:'3052100002', jk:'P', f1:78, f2:80, f3:82, s1:75, s2:79, s3:80, sas:78 },
-    { nama:'Budi Santoso',  nis:'241003', nisn:'3052100003', jk:'L', f1:70, f2:68, f3:72, s1:65, s2:70, s3:68, sas:68 },
-    { nama:'Dewi Pertiwi',  nis:'241004', nisn:'3052100004', jk:'P', f1:'',  f2:80, f3:'',  s1:77, s2:'', s3:81, sas:'' },
-    { nama:'Rizky Pratama', nis:'241005', nisn:'3052100005', jk:'L', f1:92, f2:'',  f3:88, s1:'',  s2:90, s3:'',  sas:91 },
-  ].forEach(s => rows.push({ id: ++rowId, ...s }));
-  renderAll();
+// ── Tampilkan tabel, sembunyikan loading/empty ──
+function showTable() {
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('empty-state').style.display   = 'none';
+  document.getElementById('nilai-table').style.display   = '';
+}
+function showLoading() {
+  document.getElementById('loading-state').style.display = '';
+  document.getElementById('empty-state').style.display   = 'none';
+  document.getElementById('nilai-table').style.display   = 'none';
+}
+function showEmpty(title, desc) {
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('empty-state').style.display   = 'flex';
+  document.getElementById('nilai-table').style.display   = 'none';
+  if (title) document.getElementById('empty-title').textContent = title;
+  if (desc)  document.getElementById('empty-desc').textContent  = desc;
 }
 
 function renderAll() { renderTable(); updateStats(); }
 
 function renderTable() {
+  if (!rows.length) { showEmpty('Belum ada data siswa', 'Spreadsheet kosong atau belum ada data yang dimasukkan.'); return; }
+  showTable();
   const tbody = document.getElementById('table-body');
   tbody.innerHTML = '';
   rows.forEach((r, i) => {
@@ -465,10 +497,7 @@ const esc = v => (v||'').toString().replace(/&/g,'&amp;').replace(/"/g,'&quot;')
 
 function updateNum(id, key, val) {
   const r = rows.find(r => r.id === id);
-  if (r) {
-    r[key] = (val === '' || val === null) ? '' : +val;
-    renderAll();
-  }
+  if (r) { r[key] = (val === '' || val === null) ? '' : +val; renderAll(); }
 }
 
 function updateStats() {
@@ -488,24 +517,66 @@ function filterTable() {
   });
 }
 
-// ── Payload ──
+// ── Payload builder ──
 function buildPayload() {
   return rows.filter(r => r.nama).map((r, i) => {
     const aF = avg(r.f1,r.f2,r.f3), aS = avg(r.s1,r.s2,r.s3);
     return {
       no: i+1, nama: r.nama, nis: r.nis||'', nisn: r.nisn||'', jk: r.jk||'L',
-      f1: r.f1!==''?r.f1:0, f2: r.f2!==''?r.f2:0, f3: r.f3!==''?r.f3:0, avgF: aF||0,
-      s1: r.s1!==''?r.s1:0, s2: r.s2!==''?r.s2:0, s3: r.s3!==''?r.s3:0, avgS: aS||0,
-      sas: r.sas!==''?r.sas:0, rapor: raporVal(aF, r.sas)||0
+      f1: isBlank(r.f1)?'':r.f1, f2: isBlank(r.f2)?'':r.f2, f3: isBlank(r.f3)?'':r.f3, avgF: aF||'',
+      s1: isBlank(r.s1)?'':r.s1, s2: isBlank(r.s2)?'':r.s2, s3: isBlank(r.s3)?'':r.s3, avgS: aS||'',
+      sas: isBlank(r.sas)?'':r.sas, rapor: raporVal(aF, r.sas)||''
     };
   });
 }
 
-// ── Google Sheets sync (POST → GET fallback) ──
+// ── Load dari Sheets saat halaman dibuka ──
+async function loadFromSheets(isManual = false) {
+  if (!GAS_URL || GAS_URL.trim() === '') {
+    showEmpty(
+      '⚠️ GAS_URL belum diisi',
+      'Buka file HTML ini, temukan baris const GAS_URL = "" lalu paste URL Apps Script Anda. Lihat Panduan Setup untuk detail.'
+    );
+    return;
+  }
+
+  showLoading();
+  if (isManual) showToast('🔄 Memuat ulang data dari Google Sheets…', '');
+
+  try {
+    const res  = await fetch(GAS_URL);
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('Format respons tidak valid');
+
+    // Normalisasi: nilai 0 dari Sheets bisa berarti "belum diisi" — simpan sebagai ''
+    // supaya avg() tidak salah menghitung
+    const norm = v => (v === 0 || v === '0' || v === null || v === undefined || String(v).trim() === '') ? '' : v;
+
+    rows = data.map(d => ({
+      id: ++rowId,
+      no: d.no, nama: d.nama, nis: d.nis, nisn: d.nisn, jk: d.jk,
+      f1: norm(d.f1), f2: norm(d.f2), f3: norm(d.f3),
+      s1: norm(d.s1), s2: norm(d.s2), s3: norm(d.s3),
+      sas: norm(d.sas)
+    }));
+    renderAll();
+
+    if (isManual) showToast(`✅ ${rows.length} baris berhasil dimuat!`, 'success');
+  } catch (err) {
+    showEmpty(
+      '❌ Gagal memuat data',
+      `Tidak dapat mengambil data dari Google Sheets. Pastikan GAS_URL sudah benar dan Apps Script sudah di-deploy sebagai Web App. (${err.message})`
+    );
+    if (isManual) showToast('❌ Gagal memuat: ' + err.message, 'error');
+  }
+}
+
+// ── Simpan ke Sheets (POST → GET fallback) ──
 async function syncToSheets() {
   if (!GAS_URL || GAS_URL.trim() === '') {
     showToast('⚠️ URL Apps Script belum diisi! Lihat Panduan Setup.', 'error');
-    document.getElementById('modal-setup').classList.add('open'); return;
+    document.getElementById('modal-setup').classList.add('open');
+    return;
   }
   const payload = buildPayload();
   if (!payload.length) { showToast('⚠️ Tidak ada data untuk disimpan.', 'error'); return; }
@@ -549,22 +620,6 @@ async function syncToSheets() {
   }
 }
 
-async function loadFromSheets() {
-  if (!GAS_URL || GAS_URL.trim() === '') { showToast('⚠️ URL belum diisi!', 'error'); return; }
-  showToast('🔄 Memuat data dari Google Sheets…', '');
-  try {
-    const res = await fetch(GAS_URL);
-    const data = await res.json();
-    if (!Array.isArray(data)) throw new Error('Format tidak valid');
-    rows = data.map(d => ({ id: ++rowId, ...d }));
-    renderAll();
-    showToast(`✅ ${rows.length} baris berhasil dimuat!`, 'success');
-  } catch(err) {
-    showToast('❌ Gagal memuat: ' + err.message, 'error');
-  }
-}
-
-// ── Export Excel ──
 function exportExcel() {
   const sekolah = document.getElementById('cfg-sekolah').value;
   const mapel   = document.getElementById('cfg-mapel').value;
@@ -605,7 +660,8 @@ function showToast(msg, type='') {
   toastTimer = setTimeout(() => t.className = '', 3500);
 }
 
-initRows();
+// ── Auto-load saat halaman dibuka ──
+loadFromSheets();
 </script>
 </body>
 </html>
