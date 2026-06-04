@@ -561,7 +561,9 @@ async function loadFromSheets(isManual = false) {
     // supaya avg() tidak salah menghitung
     const norm = v => (v === 0 || v === '0' || v === null || v === undefined || String(v).trim() === '') ? '' : v;
 
-    rows = data.map(d => ({
+    rows = data
+  .filter(d => d.nama && String(d.nama).trim() !== '') // ← tambahkan ini
+  .map(d => ({
       id: ++rowId,
       no: d.no, nama: d.nama, nis: d.nis, nisn: d.nisn, jk: d.jk,
       f1: norm(d.f1), f2: norm(d.f2), f3: norm(d.f3),
