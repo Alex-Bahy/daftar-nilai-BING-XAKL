@@ -406,7 +406,7 @@ function doGet(e) {
 // ══════════════════════════════════════════════════════
 //  ▶▶ PASTE URL APPS SCRIPT ANDA DI SINI ◀◀
 // ══════════════════════════════════════════════════════
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyFJmgTCCYIHieaIzov5zCm4TMPVN1HDioRf-T-XSVa7Zofb74N6Yuxcw1ZpqBAYGjGfQ/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzb_1YOLWLYTm9cbcYRP7OfrkvCqRSxgQ6NJWMlU1d4RxHYuMcWodIhM4yUJArcR5tEbw/exec";
 // ══════════════════════════════════════════════════════
 
 let rows = [], rowId = 0;
@@ -519,13 +519,22 @@ function filterTable() {
 
 // ── Payload builder ──
 function buildPayload() {
-  return rows.filter(r => r.nama).map((r, i) => {
-    const aF = avg(r.f1,r.f2,r.f3), aS = avg(r.s1,r.s2,r.s3);
+  return rows.filter(r => r.nama).map((r) => {
+    const aF = avg(r.f1, r.f2, r.f3), aS = avg(r.s1, r.s2, r.s3);
     return {
-      no: i+1, nama: r.nama, nis: r.nis||'', nisn: r.nisn||'', jk: r.jk||'L',
-      f1: isBlank(r.f1)?'':r.f1, f2: isBlank(r.f2)?'':r.f2, f3: isBlank(r.f3)?'':r.f3, avgF: aF||'',
-      s1: isBlank(r.s1)?'':r.s1, s2: isBlank(r.s2)?'':r.s2, s3: isBlank(r.s3)?'':r.s3, avgS: aS||'',
-      sas: isBlank(r.sas)?'':r.sas, rapor: raporVal(aF, r.sas)||''
+      // NIS tetap dikirim sebagai KUNCI pencari baris di Apps Script
+      // Nama, NISN, JK TIDAK dikirim — aman dari perubahan tidak sengaja
+      nis:   r.nis || '',
+      f1:    isBlank(r.f1)  ? '' : r.f1,
+      f2:    isBlank(r.f2)  ? '' : r.f2,
+      f3:    isBlank(r.f3)  ? '' : r.f3,
+      avgF:  aF || '',
+      s1:    isBlank(r.s1)  ? '' : r.s1,
+      s2:    isBlank(r.s2)  ? '' : r.s2,
+      s3:    isBlank(r.s3)  ? '' : r.s3,
+      avgS:  aS || '',
+      sas:   isBlank(r.sas) ? '' : r.sas,
+      rapor: raporVal(aF, r.sas) || ''
     };
   });
 }
