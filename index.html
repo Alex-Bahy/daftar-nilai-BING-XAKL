@@ -497,7 +497,11 @@ const esc = v => (v||'').toString().replace(/&/g,'&amp;').replace(/"/g,'&quot;')
 
 function updateNum(id, key, val) {
   const r = rows.find(r => r.id === id);
-  if (r) { r[key] = (val === '' || val === null) ? '' : +val; renderAll(); }
+  if (r) {
+    // Jika input dikosongkan, simpan sebagai '' (bukan 0)
+    r[key] = (val === '' || val === null || val === undefined) ? '' : +val;
+    renderAll();
+  }
 }
 
 function updateStats() {
