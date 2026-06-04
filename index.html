@@ -37,7 +37,28 @@ header {
 .header-icon { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 10px; font-size: 1.7rem; line-height:1; flex-shrink:0; }
 header h1 { font-size: 1.2rem; font-weight: 700; }
 header p  { font-size: .8rem; opacity: .8; margin-top: 2px; }
-.header-badge { margin-left: auto; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 5px 14px; font-size: .76rem; font-weight: 600; white-space: nowrap; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.header-badge { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 5px 14px; font-size: .76rem; font-weight: 600; white-space: nowrap; }
+
+/* ── HOME BUTTON ── */
+.btn-home {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.18);
+  border: 1.5px solid rgba(255,255,255,0.40);
+  color: #fff;
+  padding: 7px 15px; border-radius: 10px;
+  font-size: .82rem; font-weight: 700;
+  text-decoration: none; white-space: nowrap;
+  transition: background .18s, border-color .18s, transform .15s;
+  backdrop-filter: blur(4px);
+}
+.btn-home:hover {
+  background: rgba(255,255,255,0.30);
+  border-color: rgba(255,255,255,0.70);
+  transform: translateY(-1px);
+}
+.btn-home .home-icon { font-size: 1rem; line-height: 1; }
+.btn-home .home-arrow { font-size: .75rem; opacity: .7; }
 
 main { max-width: 1500px; margin: 0 auto; padding: 20px 18px 60px; }
 
@@ -213,6 +234,8 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
 @media (max-width: 700px) {
   header { padding: 12px 14px; flex-wrap: wrap; }
   .header-badge { display: none; }
+  .btn-home span.home-label { display: none; }
+  .btn-home { padding: 7px 10px; }
   main { padding: 12px 10px 50px; }
   .search-box input { width: 110px; }
   :root { --freeze-w-nama: 148px; }
@@ -233,7 +256,14 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
     <h1>Daftar Nilai Siswa</h1>
     <p>Sistem Penilaian SMK Negeri 1 Maluku Tengah · Tahun Pelajaran 2025/2026</p>
   </div>
-  <div class="header-badge">🏫 Wakasek Kurikulum</div>
+  <div class="header-right">
+    <a href="https://alex-bahy.github.io/portal-XAKL/" class="btn-home" title="Kembali ke Portal Utama">
+      <span class="home-icon">🏠</span>
+      <span class="home-label">Portal Utama</span>
+      <span class="home-arrow">↗</span>
+    </a>
+    <div class="header-badge">🏫 Wakasek Kurikulum</div>
+  </div>
 </header>
 
 <main>
@@ -262,7 +292,7 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
   <div class="action-bar">
     <button class="btn btn-success" id="btn-sync" onclick="syncToSheets()">☁️ Simpan ke Google Sheets</button>
     <button class="btn btn-accent" onclick="exportExcel()">📥 Download Excel</button>
-    <button class="btn btn-outline" onclick="loadFromSheets()">🔄 Muat Ulang dari Sheets</button>
+    <button class="btn btn-outline" onclick="loadFromSheets(true)">🔄 Muat Ulang dari Sheets</button>
     <button class="btn btn-outline" onclick="printTable()">🖨️ Cetak</button>
     <button class="btn btn-outline" onclick="document.getElementById('modal-setup').classList.add('open')">❓ Panduan Setup</button>
     <div class="search-box">
@@ -275,14 +305,12 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
   </div>
 
   <div class="table-wrap">
-    <!-- Loading state -->
     <div id="loading-state">
       <div class="loading-spinner"></div>
       <p>Memuat data dari Google Sheets…</p>
       <small>Mohon tunggu sebentar</small>
     </div>
 
-    <!-- Empty / Error state -->
     <div id="empty-state">
       <div class="empty-icon">📭</div>
       <p id="empty-title">Tidak ada data</p>
@@ -403,20 +431,13 @@ function doGet(e) {
 <div id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════
-//  ▶▶ PASTE URL APPS SCRIPT ANDA DI SINI ◀◀
-// ══════════════════════════════════════════════════════
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzDnTpSE34JbYRZYQYULt8LCl-RZRH3Yl0iDG8C7KoC3IXp-ufbvVwHTbvQ-4Mg35ew/exec";
-// ══════════════════════════════════════════════════════
 
 let rows = [], rowId = 0;
 
-// Nilai dianggap "kosong" jika: string kosong, null, undefined, atau 0 dari Sheets (belum diisi)
-// Gunakan sentinel: hanya nilai > 0 atau nilai yang memang sengaja diisi 0 via input
 const isBlank = v => v === '' || v === null || v === undefined || String(v).trim() === '';
 
 const avg = (...vals) => {
-  // Filter: harus ada nilainya (bukan blank) DAN berupa angka valid
   const nums = vals
     .filter(v => !isBlank(v) && !isNaN(+v))
     .map(Number);
@@ -437,7 +458,6 @@ const grade = val => {
   return { label:'D', cls:'rap-d' };
 };
 
-// ── Tampilkan tabel, sembunyikan loading/empty ──
 function showTable() {
   document.getElementById('loading-state').style.display = 'none';
   document.getElementById('empty-state').style.display   = 'none';
@@ -498,7 +518,6 @@ const esc = v => (v||'').toString().replace(/&/g,'&amp;').replace(/"/g,'&quot;')
 function updateNum(id, key, val) {
   const r = rows.find(r => r.id === id);
   if (r) {
-    // Jika input dikosongkan, simpan sebagai '' (bukan 0)
     r[key] = (val === '' || val === null || val === undefined) ? '' : +val;
     renderAll();
   }
@@ -521,13 +540,10 @@ function filterTable() {
   });
 }
 
-// ── Payload builder ──
 function buildPayload() {
   return rows.filter(r => r.nama).map((r) => {
     const aF = avg(r.f1, r.f2, r.f3), aS = avg(r.s1, r.s2, r.s3);
     return {
-      // NIS tetap dikirim sebagai KUNCI pencari baris di Apps Script
-      // Nama, NISN, JK TIDAK dikirim — aman dari perubahan tidak sengaja
       nis:   r.nis || '',
       f1:    isBlank(r.f1)  ? '' : r.f1,
       f2:    isBlank(r.f2)  ? '' : r.f2,
@@ -543,7 +559,6 @@ function buildPayload() {
   });
 }
 
-// ── Load dari Sheets saat halaman dibuka ──
 async function loadFromSheets(isManual = false) {
   if (!GAS_URL || GAS_URL.trim() === '') {
     showEmpty(
@@ -561,19 +576,17 @@ async function loadFromSheets(isManual = false) {
     const data = await res.json();
     if (!Array.isArray(data)) throw new Error('Format respons tidak valid');
 
-    // Normalisasi: nilai 0 dari Sheets bisa berarti "belum diisi" — simpan sebagai ''
-    // supaya avg() tidak salah menghitung
     const norm = v => (v === 0 || v === '0' || v === null || v === undefined || String(v).trim() === '') ? '' : v;
 
     rows = data
-  .filter(d => d.nama && String(d.nama).trim() !== '') // ← tambahkan ini
-  .map(d => ({
-      id: ++rowId,
-      no: d.no, nama: d.nama, nis: d.nis, nisn: d.nisn, jk: d.jk,
-      f1: norm(d.f1), f2: norm(d.f2), f3: norm(d.f3),
-      s1: norm(d.s1), s2: norm(d.s2), s3: norm(d.s3),
-      sas: norm(d.sas)
-    }));
+      .filter(d => d.nama && String(d.nama).trim() !== '')
+      .map(d => ({
+        id: ++rowId,
+        no: d.no, nama: d.nama, nis: d.nis, nisn: d.nisn, jk: d.jk,
+        f1: norm(d.f1), f2: norm(d.f2), f3: norm(d.f3),
+        s1: norm(d.s1), s2: norm(d.s2), s3: norm(d.s3),
+        sas: norm(d.sas)
+      }));
     renderAll();
 
     if (isManual) showToast(`✅ ${rows.length} baris berhasil dimuat!`, 'success');
@@ -586,7 +599,6 @@ async function loadFromSheets(isManual = false) {
   }
 }
 
-// ── Simpan ke Sheets (POST → GET fallback) ──
 async function syncToSheets() {
   if (!GAS_URL || GAS_URL.trim() === '') {
     showToast('⚠️ URL Apps Script belum diisi! Lihat Panduan Setup.', 'error');
@@ -675,7 +687,6 @@ function showToast(msg, type='') {
   toastTimer = setTimeout(() => t.className = '', 3500);
 }
 
-// ── Auto-load saat halaman dibuka ──
 loadFromSheets();
 </script>
 </body>
