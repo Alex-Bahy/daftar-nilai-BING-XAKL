@@ -40,7 +40,6 @@ header p  { font-size: .8rem; opacity: .8; margin-top: 2px; }
 .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 .header-badge { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 5px 14px; font-size: .76rem; font-weight: 600; white-space: nowrap; }
 
-/* ── HOME BUTTON ── */
 .btn-home {
   display: inline-flex; align-items: center; gap: 7px;
   background: rgba(255,255,255,0.18);
@@ -90,7 +89,6 @@ main { max-width: 1500px; margin: 0 auto; padding: 20px 18px 60px; }
 .search-box { margin-left: auto; display: flex; align-items: center; gap: 7px; background: var(--card); border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 12px; }
 .search-box input { border: none; outline: none; font-size: .84rem; width: 150px; color: var(--text); background: transparent; }
 
-/* ── Loading state ── */
 #loading-state {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 60px 20px; gap: 14px; color: var(--text-muted);
@@ -105,7 +103,6 @@ main { max-width: 1500px; margin: 0 auto; padding: 20px 18px 60px; }
 #loading-state p { font-size: .9rem; font-weight: 600; }
 #loading-state small { font-size: .78rem; color: #94a3b8; }
 
-/* ── Empty / Error state ── */
 #empty-state {
   display: none; flex-direction: column; align-items: center; justify-content: center;
   padding: 60px 20px; gap: 10px; color: var(--text-muted); text-align: center;
@@ -114,11 +111,9 @@ main { max-width: 1500px; margin: 0 auto; padding: 20px 18px 60px; }
 #empty-state p { font-size: .9rem; font-weight: 600; }
 #empty-state small { font-size: .78rem; color: #94a3b8; max-width: 340px; line-height: 1.6; }
 
-/* ─── Table wrapper ─── */
 .table-wrap { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--border); overflow: auto; position: relative; }
 table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: .82rem; table-layout: auto; }
 
-/* ── Sticky / frozen columns ── */
 th.fr-no, td.fr-no {
   position: sticky; left: 0; z-index: 4;
   width: var(--freeze-w-no); min-width: var(--freeze-w-no); max-width: var(--freeze-w-no);
@@ -142,7 +137,6 @@ tbody tr:hover td.fr-nama { background: #eff6ff; }
 tbody tr:nth-child(odd) td.fr-no,
 tbody tr:nth-child(odd) td.fr-nama  { background: #ffffff; }
 
-/* ── Header rows ── */
 thead tr:first-child th {
   background: #1e3a8a; color: #fff; padding: 10px 8px;
   font-size: .72rem; letter-spacing: .6px; font-weight: 700; text-transform: uppercase;
@@ -207,6 +201,16 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
 .rap-c { background: #fef3c7; color: #92400e; }
 .rap-d { background: #fee2e2; color: #991b1b; }
 
+/* Formula info badge */
+.formula-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #eff6ff; border: 1px solid #bfdbfe;
+  border-radius: 8px; padding: 5px 12px;
+  font-size: .74rem; font-weight: 600; color: #1e40af;
+  margin-bottom: 10px;
+}
+.formula-badge span { color: #64748b; font-weight: 400; }
+
 .freeze-hint { font-size: .72rem; color: var(--text-muted); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
 .freeze-hint span { background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 10px; font-weight: 600; font-size: .68rem; }
 
@@ -241,7 +245,7 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
   :root { --freeze-w-nama: 148px; }
 }
 @media print {
-  header, .action-bar, .config-card, #toast, .modal-bg, #save-progress, .freeze-hint { display: none !important; }
+  header, .action-bar, .config-card, #toast, .modal-bg, #save-progress, .freeze-hint, .formula-badge { display: none !important; }
   .table-wrap { box-shadow: none; border: 1px solid #ccc; overflow: visible; }
   table { font-size: .72rem; border-collapse: collapse; }
   th.fr-no, td.fr-no, th.fr-nama, td.fr-nama { position: static; box-shadow: none; }
@@ -271,7 +275,7 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
     <h2>⚙️ Konfigurasi</h2>
     <div class="config-grid">
       <div><label>Nama Sekolah</label><input id="cfg-sekolah" type="text" value="SMK Negeri 1 Maluku Tengah"></div>
-      <div><label>Mata Pelajaran</label><input id="cfg-mapel" type="text" value="Basis Informasi &amp; Jaringan"></div>
+      <div><label>Mata Pelajaran</label><input id="cfg-mapel" type="text" value="Ketik Mata Pelajaran yang anda ampu"></div>
       <div><label>Kelas / Rombel</label><input id="cfg-kelas" type="text" value="Ketik Nama Kelas"></div>
       <div><label>Semester</label><select id="cfg-semester"><option value="Ganjil">Ganjil</option><option value="Genap" selected>Genap</option></select></div>
       <div><label>Guru Pengampu</label><input id="cfg-guru" type="text" value="—"></div>
@@ -300,6 +304,11 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
     </div>
   </div>
 
+  <div class="formula-badge">
+    📐 Rumus Nilai Rapor: <strong>40% Formatif</strong> <span>+</span> <strong>40% Sumatif</strong> <span>+</span> <strong>20% SAS</strong>
+    &nbsp;·&nbsp; <span>Nilai Rapor = (Avg F × 0,4) + (Avg S × 0,4) + (SAS × 0,2)</span>
+  </div>
+
   <div class="freeze-hint">
     <span>📌 Kolom Terkunci</span> Kolom No &amp; Nama Siswa tetap terlihat saat tabel digeser ke kanan
   </div>
@@ -325,10 +334,10 @@ td .cell-in:focus { background: #dbeafe; border-radius: 4px; }
           <th rowspan="2" class="col-nis sep">NIS</th>
           <th rowspan="2" class="col-nisn">NISN</th>
           <th rowspan="2" class="col-jk">J/K</th>
-          <th colspan="4" class="sep">NILAI FORMATIF</th>
-          <th colspan="4" class="sep">NILAI SUMATIF</th>
-          <th rowspan="2" class="col-sas sep">SAS</th>
-          <th rowspan="2" class="col-rap sep">Nilai Rapor</th>
+          <th colspan="4" class="sep">NILAI FORMATIF (40%)</th>
+          <th colspan="4" class="sep">NILAI SUMATIF (40%)</th>
+          <th rowspan="2" class="col-sas sep">SAS (20%)</th>
+          <th rowspan="2" class="col-rap sep" title="Nilai Rapor = (Avg Formatif × 40%) + (Avg Sumatif × 40%) + (SAS × 20%)">Nilai Rapor</th>
         </tr>
         <tr>
           <th class="col-f sep">F1</th>
@@ -431,7 +440,7 @@ function doGet(e) {
 <div id="toast"></div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzfQZSvXWnMeBDjPxWeIBLgO4qI53TL7snJHLt65x0ZT3IQ6viNmpbZoLdkSQ72wpuQFg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyfyFIA1IvBeNThri5aPLZKITc8SoaYZcCddl4b9SX4_-VuCETMGD9mBJTwXpxbC29b/exec";
 
 let rows = [], rowId = 0;
 
@@ -444,9 +453,11 @@ const avg = (...vals) => {
   return nums.length ? +(nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1) : '';
 };
 
-const raporVal = (aF, sas) => {
-  if (aF === '' || sas === '' || sas === null || sas === undefined || String(sas).trim() === '') return '';
-  return +((+aF * 0.5) + (+sas * 0.5)).toFixed(1);
+// FORMULA BARU: 40% Formatif + 40% Sumatif + 20% SAS
+const raporVal = (aF, aS, sas) => {
+  if (aF === '' || aS === '' ||
+      sas === '' || sas === null || sas === undefined || String(sas).trim() === '') return '';
+  return +((+aF * 0.4) + (+aS * 0.4) + (+sas * 0.2)).toFixed(1);
 };
 
 const grade = val => {
@@ -486,7 +497,7 @@ function renderTable() {
   rows.forEach((r, i) => {
     const aF  = avg(r.f1, r.f2, r.f3);
     const aS  = avg(r.s1, r.s2, r.s3);
-    const rap = raporVal(aF, r.sas);
+    const rap = raporVal(aF, aS, r.sas);
     const g   = grade(rap);
     const tr  = document.createElement('tr');
     tr.dataset.id = r.id;
@@ -524,7 +535,11 @@ function updateNum(id, key, val) {
 }
 
 function updateStats() {
-  const vals = rows.map(r => raporVal(avg(r.f1,r.f2,r.f3), r.sas)).filter(v => v !== '');
+  const vals = rows.map(r => {
+    const aF = avg(r.f1, r.f2, r.f3);
+    const aS = avg(r.s1, r.s2, r.s3);
+    return raporVal(aF, aS, r.sas);
+  }).filter(v => v !== '');
   document.getElementById('st-total').textContent    = rows.length;
   document.getElementById('st-avg').textContent      = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : '—';
   document.getElementById('st-lulus').textContent    = vals.filter(v=>v>=75).length;
@@ -542,7 +557,8 @@ function filterTable() {
 
 function buildPayload() {
   return rows.filter(r => r.nama).map((r) => {
-    const aF = avg(r.f1, r.f2, r.f3), aS = avg(r.s1, r.s2, r.s3);
+    const aF = avg(r.f1, r.f2, r.f3);
+    const aS = avg(r.s1, r.s2, r.s3);
     return {
       nis:   r.nis || '',
       f1:    isBlank(r.f1)  ? '' : r.f1,
@@ -554,7 +570,7 @@ function buildPayload() {
       s3:    isBlank(r.s3)  ? '' : r.s3,
       avgS:  aS || '',
       sas:   isBlank(r.sas) ? '' : r.sas,
-      rapor: raporVal(aF, r.sas) || ''
+      rapor: raporVal(aF, aS, r.sas) || ''
     };
   });
 }
@@ -657,21 +673,22 @@ function exportExcel() {
     ['DAFTAR NILAI SISWA'],
     [`Sekolah: ${sekolah}`, '', `Mata Pelajaran: ${mapel}`],
     [`Kelas: ${kelas}`, '', `Semester: ${sem}`, '', `Guru: ${guru}`],
+    [`Rumus Nilai Rapor: 40% Formatif + 40% Sumatif + 20% SAS`],
     [],
     ['No','Nama Siswa','NIS','NISN','J/K',
-     'Formatif 1','Formatif 2','Formatif 3','Rata Formatif',
-     'Sumatif 1','Sumatif 2','Sumatif 3','Rata Sumatif','SAS','Nilai Rapor']
+     'Formatif 1','Formatif 2','Formatif 3','Rata Formatif (40%)',
+     'Sumatif 1','Sumatif 2','Sumatif 3','Rata Sumatif (40%)','SAS (20%)','Nilai Rapor']
   ];
   rows.filter(r=>r.nama).forEach((r,i) => {
     const aF = avg(r.f1,r.f2,r.f3), aS = avg(r.s1,r.s2,r.s3);
     info.push([i+1,r.nama,r.nis,r.nisn,r.jk,
       r.f1!==''?r.f1:'', r.f2!==''?r.f2:'', r.f3!==''?r.f3:'', aF!==''?aF:'',
       r.s1!==''?r.s1:'', r.s2!==''?r.s2:'', r.s3!==''?r.s3:'', aS!==''?aS:'',
-      r.sas!==''?r.sas:'', raporVal(aF,r.sas)!==''?raporVal(aF,r.sas):'']);
+      r.sas!==''?r.sas:'', raporVal(aF,aS,r.sas)!==''?raporVal(aF,aS,r.sas):'']);
   });
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(info);
-  ws['!cols'] = [{wch:4},{wch:26},{wch:10},{wch:14},{wch:4},{wch:9},{wch:9},{wch:9},{wch:13},{wch:9},{wch:9},{wch:9},{wch:13},{wch:10},{wch:12}];
+  ws['!cols'] = [{wch:4},{wch:26},{wch:10},{wch:14},{wch:4},{wch:9},{wch:9},{wch:9},{wch:18},{wch:9},{wch:9},{wch:9},{wch:18},{wch:10},{wch:12}];
   XLSX.utils.book_append_sheet(wb, ws, 'Daftar Nilai');
   XLSX.writeFile(wb, `Daftar_Nilai_${kelas.replace(/\s+/g,'_')}_${sem}.xlsx`);
   showToast('📥 File Excel berhasil diunduh!', 'success');
@@ -691,3 +708,5 @@ loadFromSheets();
 </script>
 </body>
 </html>
+
+
